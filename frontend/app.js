@@ -5,26 +5,25 @@ const API = window.location.origin;
 async function loadStats() {
 
     const res = await fetch(`${API}/stats`);
-
     const data = await res.json();
 
     document.getElementById("totalProducts").innerText =
-        data.total_products;
+        data.total_products.toLocaleString();
 
     document.getElementById("electronicsCount").innerText =
-        data.electronics;
+        data.electronics.toLocaleString();
 
     document.getElementById("booksCount").innerText =
-        data.books;
+        data.books.toLocaleString();
 
     document.getElementById("fashionCount").innerText =
-        data.fashion;
+        data.fashion.toLocaleString();
 
     document.getElementById("sportsCount").innerText =
-        data.sports;
+        data.sports.toLocaleString();
 
     document.getElementById("homeCount").innerText =
-        data.home;
+        data.home.toLocaleString();
 }
 
 async function loadProducts(reset = false) {
@@ -60,10 +59,20 @@ async function loadProducts(reset = false) {
         url += `&sort=${sort}`;
 
     const res = await fetch(url);
-
     const data = await res.json();
 
-    const grid = document.getElementById("grid");
+    document.getElementById("loader").style.display = "none";
+
+    if (reset && data.items.length === 0) {
+
+        document.getElementById("emptyState").style.display = "block";
+        return;
+    }
+
+    document.getElementById("emptyState").style.display = "none";
+
+    const grid =
+        document.getElementById("grid");
 
     data.items.forEach(p => {
 
@@ -72,9 +81,15 @@ async function loadProducts(reset = false) {
         <div class="card"
              onclick="showProduct(${p.id})">
 
+            <div class="product-id">
+                #${p.id}
+            </div>
+
             <h3>${p.name}</h3>
 
-            <p>${p.category}</p>
+            <span class="badge">
+                ${p.category}
+            </span>
 
             <p class="price">
                 $${p.price}
@@ -86,9 +101,6 @@ async function loadProducts(reset = false) {
     });
 
     cursor = data.next_cursor;
-
-    document.getElementById("loader").style.display =
-        "none";
 }
 
 async function showProduct(id) {
@@ -101,17 +113,17 @@ async function showProduct(id) {
 
     document.getElementById("productDetails").innerHTML = `
 
-        <p><b>ID:</b> ${p.id}</p>
+        <p><strong>ID:</strong> ${p.id}</p>
 
-        <p><b>Name:</b> ${p.name}</p>
+        <p><strong>Name:</strong> ${p.name}</p>
 
-        <p><b>Category:</b> ${p.category}</p>
+        <p><strong>Category:</strong> ${p.category}</p>
 
-        <p><b>Price:</b> $${p.price}</p>
+        <p><strong>Price:</strong> $${p.price}</p>
 
-        <p><b>Created:</b> ${p.created_at}</p>
+        <p><strong>Created:</strong> ${p.created_at}</p>
 
-        <p><b>Updated:</b> ${p.updated_at}</p>
+        <p><strong>Updated:</strong> ${p.updated_at}</p>
 
     `;
 
@@ -130,6 +142,9 @@ function nextPage() {
     loadProducts(false);
 }
 
-loadStats();
+window.onload = () => {
 
-loadProducts(true);
+    loadStats();
+    loadProducts(true);
+
+};
