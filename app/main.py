@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
+from sqlalchemy import asc, desc
+
 from app.database import SessionLocal
 from app.models import Product
 
@@ -23,18 +25,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Serve frontend homepage
+# Serve homepage
 @app.get("/")
 def home():
     return FileResponse(os.path.join(FRONTEND_DIR, "index.html"))
 
 
-# Products API with pagination + filtering
+# Products API
 @app.get("/products")
 def get_products(
     limit: int = Query(20, le=100),
     category: str = None,
-    cursor: int = None
+    cursor: int = None,
+    search: str = None,
+    sort: str = "newest"
 ):
     db = SessionLocal()
 
@@ -45,16 +49,27 @@ def get_products(
         if category:
             query = query.filter(Product.category == category)
 
+        # Search by product name
+        if search:
+            query = query.filter(
+                Product.name.ilike(f"%{search}%")
+            )
+
         # Cursor pagination
         if cursor:
             query = query.filter(Product.id < cursor)
 
-        products = (
-            query
-            .order_by(Product.id.desc())
-            .limit(limit)
-            .all()
-        )
+        # Sorting
+        if sort == "price_asc":
+            query = query.order_by(asc(Product.price))
+
+        elif sort == "price_desc":
+            query = query.order_by(desc(Product.price))
+
+        else:
+            query = query.order_by(desc(Product.id))
+
+        products = query.limit(limit).all()
 
         next_cursor = products[-1].id if products else None
 
@@ -78,7 +93,91 @@ def get_products(
         db.close()
 
 
-# Serve static files (CSS + JS)
+# Product Detail Page API
+@app.get("/products/{product_id}")
+def get_product(product_id: int):
+
+    db = SessionLocal()
+
+    try:
+        product = (
+            db.query(Product)
+            .filter(Product.id == product_id)
+            .first()
+        )
+
+        if not product:
+            return {
+                "message": "Product not found"
+            }
+
+        return {
+            "id": product.id,
+            "name": product.name,
+            "category": product.category,
+            "price": product.price,
+            "created_at": product.created_at,
+            "updated_at": product.updated_at
+        }
+
+    finally:
+        db.close()
+
+
+# Statistics Dashboard API
+@app.get("/stats")
+def get_stats():
+
+    db = SessionLocal()
+
+    try:
+
+        total_products = db.query(Product).count()
+
+        electronics = (
+            db.query(Product)
+            .filter(Product.category == "electronics")
+            .count()
+        )
+
+        books = (
+            db.query(Product)
+            .filter(Product.category == "books")
+            .count()
+        )
+
+        fashion = (
+            db.query(Product)
+            .filter(Product.category == "fashion")
+            .count()
+        )
+
+        sports = (
+            db.query(Product)
+            .filter(Product.category == "sports")
+            .count()
+        )
+
+        home = (
+            db.query(Product)
+            .filter(Product.category == "home")
+            .count()
+        )
+
+        return {
+            "total_products": total_products,
+            "electronics": electronics,
+            "books": books,
+            "fashion": fashion,
+            "sports": sports,
+            "home": home
+        }
+
+    finally:
+        db.close()
+
+
+# Serve CSS + JS
 app.mount(
     "/static",
     StaticFiles(directory=FRONTEND_DIR),

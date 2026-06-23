@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Browser</title>
+    <title>Product Browser Platform</title>
 
     <link rel="stylesheet" href="/static/style.css">
 </head>
@@ -11,9 +11,52 @@
 
 <div class="container">
 
-    <h1>🛍 Product Browser</h1>
+    <h1>🛍 Product Browser Platform</h1>
 
+    <!-- Dashboard -->
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <h2 id="totalProducts">0</h2>
+            <p>Total Products</p>
+        </div>
+
+        <div class="stat-card">
+            <h2 id="electronicsCount">0</h2>
+            <p>Electronics</p>
+        </div>
+
+        <div class="stat-card">
+            <h2 id="booksCount">0</h2>
+            <p>Books</p>
+        </div>
+
+        <div class="stat-card">
+            <h2 id="fashionCount">0</h2>
+            <p>Fashion</p>
+        </div>
+
+        <div class="stat-card">
+            <h2 id="sportsCount">0</h2>
+            <p>Sports</p>
+        </div>
+
+        <div class="stat-card">
+            <h2 id="homeCount">0</h2>
+            <p>Home</p>
+        </div>
+
+    </div>
+
+    <!-- Controls -->
     <div class="controls">
+
+        <input
+            type="text"
+            id="search"
+            placeholder="Search products..."
+        >
+
         <select id="category">
             <option value="">All Categories</option>
             <option value="electronics">Electronics</option>
@@ -23,9 +66,16 @@
             <option value="home">Home</option>
         </select>
 
+        <select id="sort">
+            <option value="newest">Newest First</option>
+            <option value="price_asc">Price Low → High</option>
+            <option value="price_desc">Price High → Low</option>
+        </select>
+
         <button onclick="loadProducts(true)">
-            Filter
+            Apply
         </button>
+
     </div>
 
     <div id="loader">
@@ -34,9 +84,26 @@
 
     <div id="grid" class="grid"></div>
 
-    <button onclick="nextPage()">
+    <button class="load-btn" onclick="nextPage()">
         Load More
     </button>
+
+</div>
+
+<!-- Product Detail Modal -->
+<div id="productModal" class="modal">
+
+    <div class="modal-content">
+
+        <span class="close" onclick="closeModal()">
+            &times;
+        </span>
+
+        <h2>Product Details</h2>
+
+        <div id="productDetails"></div>
+
+    </div>
 
 </div>
 
