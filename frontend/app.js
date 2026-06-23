@@ -1,7 +1,7 @@
 let cursor = null;
 
 // 🔴 CHANGE THIS AFTER DEPLOYMENT
-const API = "http://127.0.0.1:8000";
+const API = window.location.origin;
 
 async function loadProducts(reset = false) {
     if (reset) {

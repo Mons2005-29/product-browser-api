@@ -1,11 +1,20 @@
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
 from app.database import SessionLocal
 from app.models import Product
 
+import os
+
 app = FastAPI()
 
-# ✅ Allow frontend to call backend (VERY IMPORTANT)
+# Frontend folder path
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FRONTEND_DIR = os.path.join(BASE_DIR, "..", "frontend")
+
+# Allow frontend requests
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -14,10 +23,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Health check route
+# Serve frontend homepage
 @app.get("/")
 def home():
-    return {"message": "API is working"}
+    return FileResponse(os.path.join(FRONTEND_DIR, "index.html"))
 
 
 # Products API with pagination + filtering
@@ -30,18 +39,16 @@ def get_products(
     db = SessionLocal()
 
     try:
-        # Base query
         query = db.query(Product)
 
-        # ✅ FILTER BY CATEGORY (FIX YOU NEEDED)
+        # Category filter
         if category:
             query = query.filter(Product.category == category)
 
-        # Cursor pagination (no duplicates / no missing items)
+        # Cursor pagination
         if cursor:
             query = query.filter(Product.id < cursor)
 
-        # Sorting + limit
         products = (
             query
             .order_by(Product.id.desc())
@@ -49,7 +56,6 @@ def get_products(
             .all()
         )
 
-        # Next cursor for pagination
         next_cursor = products[-1].id if products else None
 
         return {
@@ -70,3 +76,11 @@ def get_products(
 
     finally:
         db.close()
+
+
+# Serve static files (CSS + JS)
+app.mount(
+    "/static",
+    StaticFiles(directory=FRONTEND_DIR),
+    name="static"
+)
