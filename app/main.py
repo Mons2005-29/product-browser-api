@@ -8,6 +8,7 @@ from sqlalchemy import asc, desc
 from app.database import SessionLocal
 from app.models import Product
 
+from datetime import datetime
 import os
 
 app = FastAPI()
@@ -25,13 +26,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Serve homepage
+# =========================
+# FRONTEND ROUTES
+# =========================
+
 @app.get("/")
 def home():
-    return FileResponse(os.path.join(FRONTEND_DIR, "index.html"))
+    return FileResponse(
+        os.path.join(FRONTEND_DIR, "index.html")
+    )
 
 
-# Products API
+@app.get("/admin")
+def admin_page():
+    return FileResponse(
+        os.path.join(FRONTEND_DIR, "admin.html")
+    )
+
+
+# =========================
+# PRODUCTS API
+# =========================
+
 @app.get("/products")
 def get_products(
     limit: int = Query(20, le=100),
@@ -45,33 +61,42 @@ def get_products(
     try:
         query = db.query(Product)
 
-        # Category filter
         if category:
-            query = query.filter(Product.category == category)
+            query = query.filter(
+                Product.category == category
+            )
 
-        # Search by product name
         if search:
             query = query.filter(
                 Product.name.ilike(f"%{search}%")
             )
 
-        # Cursor pagination
         if cursor:
-            query = query.filter(Product.id < cursor)
+            query = query.filter(
+                Product.id < cursor
+            )
 
-        # Sorting
         if sort == "price_asc":
-            query = query.order_by(asc(Product.price))
+            query = query.order_by(
+                asc(Product.price)
+            )
 
         elif sort == "price_desc":
-            query = query.order_by(desc(Product.price))
+            query = query.order_by(
+                desc(Product.price)
+            )
 
         else:
-            query = query.order_by(desc(Product.id))
+            query = query.order_by(
+                desc(Product.id)
+            )
 
         products = query.limit(limit).all()
 
-        next_cursor = products[-1].id if products else None
+        next_cursor = (
+            products[-1].id
+            if products else None
+        )
 
         return {
             "count": len(products),
@@ -93,13 +118,17 @@ def get_products(
         db.close()
 
 
-# Product Detail Page API
+# =========================
+# PRODUCT DETAILS
+# =========================
+
 @app.get("/products/{product_id}")
 def get_product(product_id: int):
 
     db = SessionLocal()
 
     try:
+
         product = (
             db.query(Product)
             .filter(Product.id == product_id)
@@ -124,7 +153,113 @@ def get_product(product_id: int):
         db.close()
 
 
-# Statistics Dashboard API
+# =========================
+# CREATE PRODUCT
+# =========================
+
+@app.post("/products")
+def create_product(product: dict):
+
+    db = SessionLocal()
+
+    try:
+
+        new_product = Product(
+            name=product["name"],
+            category=product["category"],
+            price=product["price"]
+        )
+
+        db.add(new_product)
+        db.commit()
+        db.refresh(new_product)
+
+        return {
+            "message": "Product created",
+            "id": new_product.id
+        }
+
+    finally:
+        db.close()
+
+
+# =========================
+# UPDATE PRODUCT
+# =========================
+
+@app.put("/products/{product_id}")
+def update_product(
+    product_id: int,
+    updated_data: dict
+):
+
+    db = SessionLocal()
+
+    try:
+
+        product = (
+            db.query(Product)
+            .filter(Product.id == product_id)
+            .first()
+        )
+
+        if not product:
+            return {
+                "message": "Product not found"
+            }
+
+        product.name = updated_data["name"]
+        product.category = updated_data["category"]
+        product.price = updated_data["price"]
+        product.updated_at = datetime.utcnow()
+
+        db.commit()
+
+        return {
+            "message": "Product updated"
+        }
+
+    finally:
+        db.close()
+
+
+# =========================
+# DELETE PRODUCT
+# =========================
+
+@app.delete("/products/{product_id}")
+def delete_product(product_id: int):
+
+    db = SessionLocal()
+
+    try:
+
+        product = (
+            db.query(Product)
+            .filter(Product.id == product_id)
+            .first()
+        )
+
+        if not product:
+            return {
+                "message": "Product not found"
+            }
+
+        db.delete(product)
+        db.commit()
+
+        return {
+            "message": "Product deleted"
+        }
+
+    finally:
+        db.close()
+
+
+# =========================
+# STATS API
+# =========================
+
 @app.get("/stats")
 def get_stats():
 
@@ -132,7 +267,9 @@ def get_stats():
 
     try:
 
-        total_products = db.query(Product).count()
+        total_products = (
+            db.query(Product).count()
+        )
 
         electronics = (
             db.query(Product)
@@ -177,7 +314,10 @@ def get_stats():
         db.close()
 
 
-# Serve CSS + JS
+# =========================
+# STATIC FILES
+# =========================
+
 app.mount(
     "/static",
     StaticFiles(directory=FRONTEND_DIR),

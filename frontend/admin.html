@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard</title>
+
+    <link rel="stylesheet" href="/static/admin.css">
+
+</head>
+
+<body>
+
+    <!-- Hero -->
+
+    <section class="hero">
+
+        <h1>⚙️ Product Management Dashboard</h1>
+
+        <p>
+            Manage products, monitor inventory, and perform CRUD operations
+            through a modern administration dashboard.
+        </p>
+
+    </section>
+
+    <div class="container">
+
+        <!-- Analytics -->
+
+        <div class="stats-grid">
+
+            <div class="stat-card">
+                <h2 id="totalProducts">0</h2>
+                <p>Total Products</p>
+            </div>
+
+            <div class="stat-card">
+                <h2 id="electronicsCount">0</h2>
+                <p>Electronics</p>
+            </div>
+
+            <div class="stat-card">
+                <h2 id="booksCount">0</h2>
+                <p>Books</p>
+            </div>
+
+            <div class="stat-card">
+                <h2 id="fashionCount">0</h2>
+                <p>Fashion</p>
+            </div>
+
+            <div class="stat-card">
+                <h2 id="sportsCount">0</h2>
+                <p>Sports</p>
+            </div>
+
+            <div class="stat-card">
+                <h2 id="homeCount">0</h2>
+                <p>Home</p>
+            </div>
+
+        </div>
+
+        <!-- Add Product -->
+
+        <div class="form-card">
+
+            <h2>➕ Add Product</h2>
+
+            <input
+                type="text"
+                id="name"
+                placeholder="Product Name"
+            >
+
+            <select id="category">
+
+                <option value="electronics">Electronics</option>
+                <option value="books">Books</option>
+                <option value="fashion">Fashion</option>
+                <option value="sports">Sports</option>
+                <option value="home">Home</option>
+
+            </select>
+
+            <input
+                type="number"
+                id="price"
+                placeholder="Price (₹)"
+            >
+
+            <button onclick="addProduct()">
+                Add Product
+            </button>
+
+        </div>
+
+        <!-- Products -->
+
+        <div class="products-section">
+
+            <div class="section-header">
+
+                <h2>📦 Latest Products</h2>
+
+                <span id="productCount">
+                    Loading...
+                </span>
+
+            </div>
+
+            <div id="products"></div>
+
+        </div>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- EDIT PRODUCT MODAL -->
+    <!-- ========================= -->
+
+    <div id="editModal" class="modal">
+
+        <div class="modal-content">
+
+            <span
+                class="close"
+                onclick="closeEditModal()"
+            >
+                &times;
+            </span>
+
+            <h2>Edit Product</h2>
+
+            <input
+                type="hidden"
+                id="editId"
+            >
+
+            <label>Product Name</label>
+
+            <input
+                type="text"
+                id="editName"
+            >
+
+            <label>Category</label>
+
+            <select id="editCategory">
+
+                <option value="electronics">Electronics</option>
+                <option value="books">Books</option>
+                <option value="fashion">Fashion</option>
+                <option value="sports">Sports</option>
+                <option value="home">Home</option>
+
+            </select>
+
+            <label>Price (₹)</label>
+
+            <input
+                type="number"
+                id="editPrice"
+            >
+
+            <div class="modal-buttons">
+
+                <button onclick="saveProduct()">
+                    💾 Save Changes
+                </button>
+
+                <button
+                    class="cancel-btn"
+                    onclick="closeEditModal()"
+                >
+                    Cancel
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="/static/admin.js"></script>
+
+</body>
+
+</html>
