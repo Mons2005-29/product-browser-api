@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Login</title>
+
+    <link rel="stylesheet" href="/static/admin.css">
+
+</head>
+
+<body>
+
+    <!-- Hero -->
+
+    <section class="hero">
+
+        <h1>🔒 Admin Login</h1>
+
+        <p>
+            Sign in to access the Product Management Dashboard.
+        </p>
+
+    </section>
+
+    <div class="login-wrapper">
+
+        <div class="login-card">
+
+            <h2>Welcome Back</h2>
+            <p class="subtitle">Enter your credentials to continue</p>
+
+            <div id="errorMsg" class="error-msg"></div>
+
+            <form id="loginForm">
+
+                <input
+                    type="text"
+                    id="username"
+                    placeholder="Username"
+                    autocomplete="username"
+                    required
+                >
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Password"
+                    autocomplete="current-password"
+                    required
+                >
+
+                <button type="submit">
+                    Sign In
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <script src="/static/login.js"></script>
+
+</body>
+
+</html>

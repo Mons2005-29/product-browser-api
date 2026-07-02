@@ -18,6 +18,17 @@
 
     <section class="hero">
 
+        <div class="top-bar">
+
+            <button
+                class="logout-btn"
+                onclick="logout()"
+            >
+                🚪 Logout
+            </button>
+
+        </div>
+
         <h1>⚙️ Product Management Dashboard</h1>
 
         <p>
@@ -65,6 +76,22 @@
 
         </div>
 
+        <!-- ========================= -->
+        <!-- ANALYTICS: CATEGORY CHART -->
+        <!-- ========================= -->
+
+        <div class="products-section" style="margin-bottom:35px;">
+
+            <div class="section-header">
+
+                <h2>📊 Category Distribution</h2>
+
+            </div>
+
+            <div id="categoryChart" class="chart-container"></div>
+
+        </div>
+
         <!-- Add Product -->
 
         <div class="form-card">
@@ -97,6 +124,14 @@
                 Add Product
             </button>
 
+            <button
+                class="upload-btn"
+                onclick="openUploadModal()"
+                style="margin-top:12px;"
+            >
+                📤 Bulk Upload (CSV)
+            </button>
+
         </div>
 
         <!-- Products -->
@@ -110,6 +145,33 @@
                 <span id="productCount">
                     Loading...
                 </span>
+
+            </div>
+
+            <div class="bulk-toolbar">
+
+                <label>
+                    <input
+                        type="checkbox"
+                        id="selectAllCheckbox"
+                        onchange="toggleSelectAll()"
+                    >
+                    Select All
+                </label>
+
+                <button
+                    class="delete-btn"
+                    onclick="deleteSelected()"
+                >
+                    🗑 Delete Selected
+                </button>
+
+                <button
+                    class="delete-btn"
+                    onclick="confirmDeleteAll()"
+                >
+                    ⚠️ Delete All Products
+                </button>
 
             </div>
 
@@ -176,6 +238,61 @@
                 <button
                     class="cancel-btn"
                     onclick="closeEditModal()"
+                >
+                    Cancel
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- BULK UPLOAD MODAL -->
+    <!-- ========================= -->
+
+    <div id="uploadModal" class="modal">
+
+        <div class="modal-content">
+
+            <span
+                class="close"
+                onclick="closeUploadModal()"
+            >
+                &times;
+            </span>
+
+            <h2>📤 Bulk Upload Products (CSV)</h2>
+
+            <p style="color:#64748b; margin-bottom:16px; font-size:.9rem;">
+                CSV must include columns: <strong>name, category, price</strong>.
+                Valid categories: electronics, books, fashion, sports, home.
+            </p>
+
+            <input
+                type="file"
+                id="csvFile"
+                accept=".csv"
+            >
+
+            <div id="csvMessage"></div>
+
+            <div id="csvPreview"></div>
+
+            <div class="modal-buttons">
+
+                <button onclick="previewCSV()">
+                    👀 Preview
+                </button>
+
+                <button onclick="importProducts()">
+                    ✅ Import Valid Rows
+                </button>
+
+                <button
+                    class="cancel-btn"
+                    onclick="closeUploadModal()"
                 >
                     Cancel
                 </button>

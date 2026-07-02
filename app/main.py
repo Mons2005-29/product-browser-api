@@ -30,10 +30,18 @@ app.add_middleware(
 # FRONTEND ROUTES
 # =========================
 
+
 @app.get("/")
 def home():
     return FileResponse(
         os.path.join(FRONTEND_DIR, "index.html")
+    )
+
+
+@app.get("/login")
+def login_page():
+    return FileResponse(
+        os.path.join(FRONTEND_DIR, "login.html")
     )
 
 
@@ -42,7 +50,6 @@ def admin_page():
     return FileResponse(
         os.path.join(FRONTEND_DIR, "admin.html")
     )
-
 
 # =========================
 # PRODUCTS API

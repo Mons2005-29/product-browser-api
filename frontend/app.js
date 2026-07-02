@@ -92,7 +92,7 @@ async function loadProducts(reset = false) {
             </span>
 
             <p class="price">
-                $${p.price}
+                ₹${Number(p.price).toLocaleString()}
             </p>
 
         </div>
@@ -119,7 +119,7 @@ async function showProduct(id) {
 
         <p><strong>Category:</strong> ${p.category}</p>
 
-        <p><strong>Price:</strong> $${p.price}</p>
+        <p><strong>Price:</strong> ₹${Number(p.price).toLocaleString()}</p>
 
         <p><strong>Created:</strong> ${p.created_at}</p>
 
